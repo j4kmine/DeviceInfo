@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:elevation="@dimen/spacing_small"
+        app:cardCornerRadius="@dimen/spacing_small"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/spacing_middle">
+            <ImageView android:layout_width="60dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/spacing_middle"
+                android:src="@drawable/ic_low_battery"
+                android:tint="@color/blue_A400"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/spacing_middle"
+                android:layout_marginRight="@dimen/spacing_middle"
+                android:orientation="vertical">
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="@dimen/spacing_middle"
+                    android:text="@string/battery"
+                    />
+                <RelativeLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <ProgressBar
+                        android:id="@+id/progressBarInternalBattery"
+                        android:progressDrawable="@drawable/progress_status"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_centerVertical="true"
+                        android:layout_height="7dp"
+
+                        android:max="100"
+                        android:layout_marginRight="@dimen/spacing_xmlarge"
+
+                        android:progressTint="@color/blue_A700"/>
+                    <TextView
+                        android:id="@+id/txtUserPersentBattery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="70%"
+
+                        android:layout_alignRight="@+id/progressBarInternalBattery"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        />
+                </RelativeLayout>
+                <TextView
+                    android:id="@+id/txtBatteryMah"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/internal_stroge_title"
+                    android:layout_marginBottom="@dimen/spacing_middle"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+</LinearLayout>
