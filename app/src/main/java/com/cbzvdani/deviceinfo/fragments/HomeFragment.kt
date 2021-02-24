@@ -1,24 +1,37 @@
 package com.cbzvdani.deviceinfo.fragments
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.graphics.Camera
+import android.hardware.Camera.open
 import android.hardware.camera2.CameraManager
 import android.os.*
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.cbzvdani.deviceinfo.R
+import com.cbzvdani.deviceinfo.models.FeaturesHWModel
+import com.cbzvdani.deviceinfo.utils.KeyUtil
 import com.cbzvdani.deviceinfo.utils.Methods
 import kotlinx.android.synthetic.main.battery_info.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.internal_storage.*
+import kotlinx.android.synthetic.main.os_info_processor_info.*
+import java.io.File
+import java.nio.channels.AsynchronousFileChannel.open
+import java.nio.channels.AsynchronousServerSocketChannel.open
+import java.nio.channels.DatagramChannel.open
+import java.text.DateFormatSymbols
 import java.text.DecimalFormat
+import java.util.*
 import kotlin.jvm.internal.Intrinsics
 
 
@@ -40,7 +53,10 @@ class HomeFragment : Fragment() {
     var temperature = 0
     var voltage = 0
     var deviceStatus = 0
-    var batteryCapacity = 0
+    var manufacture: String?=null
+    var model: String?=null
+    var serial:String?= null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -84,6 +100,9 @@ class HomeFragment : Fragment() {
         activity!!.registerReceiver(mBatInfoReceiver, filter)
         getMemoryInfo()
         getInternalStroge()
+        getDeviceName()
+        getOSInfo()
+        getProcessorName()
 
     }
     val mBatInfoReceiver = object : BroadcastReceiver() {
@@ -133,7 +152,7 @@ class HomeFragment : Fragment() {
         txtUserPersentBattery.setText("$level%")
         progressBarInternalBattery.setProgress(level)
     }
-  
+
     @SuppressLint("SetTextI18n")
     private fun getInternalStroge()
     {
@@ -150,6 +169,28 @@ class HomeFragment : Fragment() {
                 R.string.free
             ) + " " + formatSize(freeInternalValue)
         )
+    }
+    private fun checkCameraPermission(ids: String) {
+        //if build version is higher than marshmallow
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val hasWriteCameraPermission = activity!!.checkSelfPermission(Manifest.permission.CAMERA)
+            if (hasWriteCameraPermission != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.CAMERA), KeyUtil.KEY_CAMERA_CODE)
+            } else {
+                fetchCameraCharacteristics(cameraManager!!, ids)
+            }
+        } else {
+            fetchCameraCharacteristics(cameraManager!!, ids)
+        }
+    }
+
+    private fun fetchCameraCharacteristics(cameraManager: CameraManager, ids: String) {
+        val lists = ArrayList<FeaturesHWModel>()
+        val characteristics = cameraManager.getCameraCharacteristics(ids)
+        for (key in characteristics.keys) {
+
+        }
+
     }
     private fun getTotalInternalMemorySize(): Long {
         val path = Environment.getDataDirectory()
@@ -185,6 +226,184 @@ class HomeFragment : Fragment() {
                 totalRamValue
             )
     }
+
+
+
+    @SuppressLint("SetTextI18n")
+    private fun getDeviceName() {
+        manufacture = Build.MANUFACTURER
+        model = Build.MANUFACTURER
+        val osInstalledDate = Date(Build.TIME)
+        val calendar: Calendar = GregorianCalendar()
+        calendar.time = osInstalledDate
+        if (model?.toLowerCase()!!.startsWith(manufacture!!.toLowerCase())) {
+            txtModel.text =  capitalize(model)
+        }else{
+            txtModel.text = capitalize(manufacture) + " " + model
+        }
+        var month  = calendar.get(Calendar.MONTH) + 1
+        var months  = DateFormatSymbols().getMonths().get(month - 1)
+        txtDateOsInstalled.text  =  months.toString() + " " + calendar.get(Calendar.YEAR).toString()
+    }
+    private fun getProcessorName(){
+        try {
+            val s = Scanner(File("/proc/cpuinfo"))
+            while (s.hasNextLine()) {
+                val vals = s.nextLine().split(": ")
+                if (vals.size > 1){
+                   // Log.d("karir",vals[0])
+                    if(vals[0].contains("model name")){
+                        txt_user_processor.text = vals[1].toString()
+
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("getCpuInfoMap", Log.getStackTraceString(e))
+        }
+
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun getOSInfo() {
+
+        //get from os library
+        val CVersion = Build.VERSION.SDK_INT
+        when (CVersion) {
+            11 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.honeycomb)} ${Build.VERSION.RELEASE}"""
+
+                )
+
+            }
+            12 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.honeycomb)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            13 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.honeycomb)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            14 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.ics)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            15 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.ics)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            16 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.jellybean)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            17 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.jellybean)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            18 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.jellybean)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            19 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.kitkat)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            21 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.lollipop)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            22 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.lollipop)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            23 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.marshmallow)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            24 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.nougat)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            25 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.nougat)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            26 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.oreo)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            27 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.oreo)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            28 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.pie)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            29 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.ten)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            30 -> {
+                tvVersionName.setText(
+                    """${resources.getString(R.string.eleven)} ${Build.VERSION.RELEASE}"""
+                )
+
+            }
+            else -> {
+                tvVersionName.setText(resources.getString(R.string.unknown_version))
+
+            }
+        }
+
+    }
+    private fun capitalize(s: String?): String? {
+        if (s == null || s.length == 0) {
+            return ""
+        }
+        val first = s[0]
+        return if (Character.isUpperCase(first)) {
+            s
+        } else {
+            Character.toUpperCase(first).toString() + s.substring(1)
+        }
+    }
+
     private fun formatSize(size: Long): String {
         return if (size <= 0L) {
             "0"

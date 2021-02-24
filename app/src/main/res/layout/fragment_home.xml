@@ -49,6 +49,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/txtModel"
                         android:text="Asus Zenfone"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                         android:textColor="@color/grey_60"
@@ -57,6 +58,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/txtDateOsInstalled"
                         android:text="2019"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                         android:textColor="@color/red_300" />

@@ -75,6 +75,9 @@
     <string name="marshmallow">Marshmallow</string>
     <string name="nougat">Nougat</string>
     <string name="oreo">Oreo</string>
+    <string name="pie">Pie</string>
+    <string name="ten">Android 10</string>
+    <string name="eleven">Android 11</string>
     <string name="unknown_version">Unknown version</string>
 
     <!-- Battery -->
